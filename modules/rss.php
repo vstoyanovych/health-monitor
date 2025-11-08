@@ -1,0 +1,70 @@
+<?php
+
+	//------------------------------------------------------------------------------
+	//|            Content Management System SiMan CMS                             |
+	//|              http://simancms.apserver.org.ua                               |
+	//------------------------------------------------------------------------------
+
+	/*
+	Module Name: RSS-Feed
+	Module URI: http://simancms.apserver.org.ua/modules/content/
+	Description: RSS-Export module
+	Version: 2021-12-01
+	Author URI: http://simancms.apserver.org.ua/
+	*/
+
+	use SM\SM;
+
+	if (!defined("SIMAN_DEFINED"))
+		exit('Hacking attempt!');
+
+	sm_default_action('news');
+
+	if (sm_is_installed(sm_current_module()))
+		{
+			if (sm_action('news'))
+				{
+					sm_template('system_empty_block');
+					$rss['title'] = sm_website_title();
+					$rss['link'] = 'http://'.sm_settings('resource_url');
+					$rss['description'] = sm_settings('logo_text');
+					$ctg = intval(sm_getvars('ctg'));
+					$sql = "SELECT * FROM ".sm_table_prefix()."news, ".sm_table_prefix()."categories_news WHERE id_category_n=id_category ";
+					if (!empty($ctg))
+						{
+							$sql .= " AND id_category_n=".intval($ctg);
+						}
+					$sql .= " AND (date_news<=".time().") ";
+					$sql .= " ORDER BY date_news DESC LIMIT ".intval(sm_settings('rss_itemscount'));
+					$result = execsql($sql);
+					$i = 0;
+					while ($row = database_fetch_assoc($result))
+						{
+							$rss['items'][$i]['title'] = $row['title_news'];
+							$rss['items'][$i]['pubDate'] = date('D, d M Y H:i:s O', $row['date_news']);
+							if (empty($row->preview_news))
+								{
+									$rss['items'][$i]['description'] = cut_str_by_word(strip_tags($row['text_news']), sm_settings('news_anounce_cut'), '...');
+								}
+							else
+								$rss['items'][$i]['description'] = strip_tags($row['preview_news']);
+							$rss['items'][$i]['description'] = preg_replace('/&#?[a-z0-9]+;/i', '', $rss['items'][$i]['description']);
+							$rss['items'][$i]['description'] = str_replace('&', '&amp;', $rss['items'][$i]['description']);
+							$rss['items'][$i]['description'] = str_replace('&nbsp;', ' ', $rss['items'][$i]['description']);
+							$rss['items'][$i]['description'] = str_replace('nbsp;', ' ', $rss['items'][$i]['description']);
+							$rss['items'][$i]['fulltext'] = strip_tags($row['text_news']);
+							$rss['items'][$i]['fulltext'] = preg_replace('/&#?[a-z0-9]+;/i', '', $rss['items'][$i]['fulltext']);
+							$rss['items'][$i]['fulltext'] = str_replace('&', '&amp;', $rss['items'][$i]['fulltext']);
+							$rss['items'][$i]['title'] = $row['title_news'];
+							$rss['items'][$i]['link'] = sm_homepage().'index.php?m=news&amp;d=view&amp;nid='.$row['id_news'];
+							$rss['items'][$i]['category'] = $row['title_category'];
+							if (empty($rss['items'][$i]['title']))
+								$rss['items'][$i]['title'] = $rss['items'][$i]['description'];
+							$i++;
+						}
+					sm_event('generaterss', Array($rss));
+				}
+		}
+
+	if (SM::isAdministrator())
+		include('modules/inc/adminpart/rss.php');

@@ -1,0 +1,230 @@
+#notification_wrapper{
+    position: absolute;
+    top: 80px;
+    right: 10px;
+    z-index: 9999;
+}
+.allow-push-notification-bar .buttons-more #close-push-notification{
+    background: red;
+}
+.allow-push-notification-bar .buttons-more{
+    padding: 10px;
+    display: table;
+    margin: auto;
+}
+.allow-push-notification-bar{
+    display: none;
+    border: 1px solid rgba(0,0,0,0.1);
+    position: absolute;
+    top: 10px;
+    left: 100px;
+    background: #fff;
+    z-index: 9999;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 .25rem .75rem rgba(0,0,0,0.1);
+}
+
+/* ================ Modal Windows =====================*/
+
+#tinymce_modal .modal-content .row h1,
+#view_video_modal .modal-content .row h1,
+#assign_customer_modal .modal-content .row h1,
+#openai_assistant_history_modal .modal-content .row h1,
+#openai_assistant_modal .modal-content .row h1,
+#add_customer_modal .modal-content .row h1,
+#common_shared_modal .modal-content .row h1{
+    text-align: center;
+    font-weight: normal;
+    font-size: 28px;
+    margin-bottom: 30px;
+}
+.close-modal a{
+    color: rgba(58, 53, 65, 0.54);
+}
+.close-modal{
+    position: absolute;
+    right: 25px;
+    top: 25px;
+    z-index: 999;
+}
+#tinymce_modal .modal-content .row h4,
+#view_video_modal .modal-content .row h4,
+#openai_assistant_history_modal .modal-content .row h4,
+#openai_assistant_modal .modal-content .row h4,
+#assign_customer_modal .modal-content .row h4,
+#common_shared_modal .modal-content .row h4,
+#add_customer_modal .modal-content .row h4{
+    margin-bottom: 0;
+}
+
+#tinymce_modal .modal-content .row,
+#view_video_modal .modal-content .row,
+#assign_customer_modal .modal-content .row,
+#openai_assistant_history_modal .modal-content .row,
+#openai_assistant_modal .modal-content .row,
+#common_shared_modal .modal-content .row,
+#add_customer_modal .modal-content .row{
+    display: flex;
+    flex-wrap: wrap;
+}
+#openai_assistant_history_modal .modal-content .row > div,
+#openai_assistant_modal .modal-content .row > div{
+    margin-bottom: 0px;
+}
+#tinymce_modal .modal-content,
+#view_video_modal .modal-content,
+#assign_customer_modal .modal-content,
+#openai_assistant_history_modal .modal-content,
+#openai_assistant_modal .modal-content,
+#common_shared_modal .modal-content,
+#add_customer_modal .modal-content{
+    border:0px solid;
+    border-radius: 5px;
+}
+#tinymce_modal .modal-content,
+#view_video_modal .modal-content,
+#openai_assistant_history_modal .modal-content,
+#openai_assistant_modal .modal-content,
+#assign_customer_modal .modal-content{
+    border-radius: 0px;
+}
+#view_video_modal .modal-content,
+#view_video_modal .modal-dialog{
+    height: 100%;
+}
+#view_video_modal .modal-dialog,
+#tinymce_modal .modal-dialog,
+#openai_assistant_history_modal .modal-dialog,
+#openai_assistant_modal .modal-dialog,
+#assign_customer_modal .modal-dialog{
+    width: 800px;
+    margin: 0;
+}
+#openai_assistant_history_modal .modal-dialog .modal-content{
+    padding: 40px 0!important;
+}
+.openai_assistant_history_modal_content .message-divider .openai-assistant-container{
+    background: #f0f0f0;
+}
+.openai_assistant_history_modal_content .message-divider > div{
+    padding: 15px 40px;
+}
+.openai_assistant_history_modal_content h2{
+    padding: 0 40px;
+}
+#openai_assistant_history_modal .modal-dialog .modal-content,
+#openai_assistant_history_modal .modal-dialog{
+    min-height: 100vH;
+}
+#tinymce_modal .modal-dialog{
+    margin: auto;
+}
+#add_customer_modal .modal-dialog,
+#common_shared_modal .modal-dialog{
+    width: 900px;
+    max-width: 95%;
+}
+#tinymce_modal,
+#organization_call_modal,
+#view_video_modal,
+#openai_assistant_history_modal,
+#openai_assistant_modal,
+#assign_customer_modal{
+    z-index: 0;
+    position: absolute;
+    opacity: 0;
+    display: none;
+}
+#openai_assistant_history_modal.showWindow{
+    display: block;
+    z-index: 9999999;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    opacity: 1;
+    position: fixed;
+}
+#openai_assistant_modal.showWindow{
+    display: block;
+    z-index: 999999;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    opacity: 1;
+    position: fixed;
+}
+#openai_assistant_modal .modal-content {
+    display: table;
+    width: 100%;
+    min-height: 100vH;
+}
+.openai_assistant_history_modal_content .history-container a,
+.openai_assistant_modal_content .history-container a{
+    float: right;
+}
+.openai_assistant_history_modal_content .history-container,
+.openai_assistant_modal_content .history-container{
+    display: table;
+    width: 100%;
+    padding: 0px 0 10px;
+}
+.openai_assistant_history_modal_content .user-request,
+.openai_assistant_modal_content .user-request{
+    border-radius: 6px;
+    background: #777EBB;
+    color: #fff;
+    padding: 10px;
+    margin-bottom: 20px;
+    box-shadow: rgba(58, 53, 65, 0.1) 0px 2px 10px 0px;
+}
+#openai_assistant_modal_shadow{
+    opacity: 0.6;
+    background: #000;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1900;
+}
+#openai_assistant_modal_shadow{
+    z-index: 9999;
+}
+#openai_assistant_modal #dashboard-conversation-text {
+    padding-right: 60px;
+    height: 145px;
+    background: #fff;
+    margin-bottom: 0;
+    border-color: #E5E5E5;
+}
+#openai_assistant_modal .rd-dash-conversation-answer button {
+    text-transform: uppercase;
+    box-shadow: none;
+    color: #fff !important;
+    background: #1A4159;
+    padding: 7px 30px!important;
+    font-family: Lato,sans-serif;
+    float: right;
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+}
+#openai_assistant_modal .rd-dash-conversation-answer .conversation-buttons-group button svg{
+    margin: auto;
+}
+#openai_assistant_modal .rd-dash-conversation-answer .conversation-buttons-group button {
+    position: relative;
+    font-size: 14px;
+    padding: 0;
+    margin-right: 10px;
+    border-radius: 5px;
+    background: #0f65ef!important;
+}
+#openai_assistant_modal .rd-dash-conversation-answer .conversation-buttons-group {
+
+}

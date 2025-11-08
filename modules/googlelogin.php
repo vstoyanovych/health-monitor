@@ -41,7 +41,7 @@
 											Redirect::Now('index.php?m=dashboard');
 										}
 									else
-										Redirect::Now('https://'.FrontEndDomain().'/');
+										Redirect::Now('https://'.Domain().'/');
 								}
 						}
 

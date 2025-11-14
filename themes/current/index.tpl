@@ -246,7 +246,7 @@
 
 <script>
     $(document).ready(function() {ldelim}
-        $('select').niceSelect();
+        
     {rdelim});
 </script>
 

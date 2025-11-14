@@ -54,6 +54,144 @@
 .resource-availability-segment.status-unknown {
     background: #cbd5f5;
 }
+
+.nuwmhealth-status-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 70px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.nuwmhealth-status-pill.status-ready {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+.nuwmhealth-status-pill.status-not-ready {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.nuwmhealth-stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.nuwmhealth-stat-card {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.nuwmhealth-stat-card span.label {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #94a3b8;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.nuwmhealth-stat-card strong {
+    display: block;
+    font-size: 26px;
+    font-weight: 700;
+    color: #0f172a;
+    text-align: center;
+}
+
+.nuwmhealth-stat-card strong.ready {
+    color: #15803d;
+}
+
+.nuwmhealth-stat-card strong.not-ready {
+    color: #b91c1c;
+}
+
+.nuwmhealth-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: last baseline;
+    margin-bottom: 20px;
+}
+
+.nuwmhealth-filters label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #475569;
+    font-weight: 600;
+}
+
+.nuwmhealth-filters select {
+    min-width: 180px;
+}
+
+.nuwmhealth-filters .filter-actions button{
+    color: #fff;
+}
+.nuwmhealth-filters .filter-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.nuwmhealth-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.nuwmhealth-group-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+    padding: 16px;
+}
+
+.nuwmhealth-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.nuwmhealth-group-header strong {
+    font-size: 16px;
+    color: #0f172a;
+}
+
+.nuwmhealth-group-header span {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+}
+
+.nuwmhealth-group-card table {
+    margin-bottom: 0;
+}
+
+.nuwmhealth-group-card .admin-link {
+    color: #0f65ef;
+}
 /* ==========================================================================
    Modern Tailwind-Inspired Stylesheets - Management Theme
    ========================================================================== */

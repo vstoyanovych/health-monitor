@@ -54,6 +54,15 @@
 					$this->OrderByFieldAppend('title', true);
 					return $this;
 				}
+
+			public function FilterByNeedToCheck(?bool $need_to_check): self
+				{
+					if ($need_to_check === null)
+						return $this;
+
+					$this->SetFilterFieldIntValue('need_to_check', $need_to_check ? 1 : 0);
+					return $this;
+				}
 		}
 
 

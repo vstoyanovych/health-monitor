@@ -31,6 +31,11 @@
 					return intval($this->FieldIntValue('ready')) === 1;
 				}
 
+			public function NeedToCheck(): bool
+				{
+					return intval($this->FieldIntValue('need_to_check')) === 1;
+				}
+
 			public function Admin(): ?string
 				{
 					return $this->FieldStringValue('admin');
@@ -44,6 +49,11 @@
 			public function SetReady($ready): void
 				{
 					$this->UpdateValues(['ready' => intval($ready) ? 1 : 0]);
+				}
+
+			public function SetNeedToCheck($need_to_check): void
+				{
+					$this->UpdateValues(['need_to_check' => intval($need_to_check) ? 1 : 0]);
 				}
 
 			public function SetAdmin(?string $admin): void

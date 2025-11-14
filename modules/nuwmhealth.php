@@ -1,9 +1,10 @@
 <?php
 
+	use NUWM\MainWebsite\MainWebsitePage;
+	use NUWM\MainWebsite\MainWebsitePageChecker;
 	use NUWM\MainWebsite\MainWebsitePagesList;
 	use SM\Common\Redirect;
 	use SM\SM;
-	use SM\UI\Buttons;
 	use SM\UI\Grid;
 	use SM\UI\UI;
 
@@ -215,6 +216,15 @@
 			$admin_report = nuwmhealth_prepare_admin_report($report_list, $report_sort);
 
 			$ui = new UI();
+			$last_status = trim(SM::GET('checkstatus')->AsString());
+			$last_error = trim(SM::GET('checkerror')->AsString());
+			if ($last_status !== '')
+				{
+					if ($last_error !== '')
+						$ui->NotificationError('Last check: '.$last_status.' ('.$last_error.')');
+					else
+						$ui->NotificationSuccess('Last check: '.$last_status);
+				}
 			$export_url = 'index.php?'.http_build_query([
 				'm' => 'nuwmhealth',
 				'd' => 'report_export',
@@ -238,6 +248,40 @@
 			]);
 			$ui->Output(true);
 			return;
+		}
+	elseif (sm_action('check'))
+		{
+			$page_id = SM::GET('id')->AsInt();
+			$return_to = SM::GET('returnto')->AsString();
+			if ($page_id <= 0)
+				Redirect::Now($return_to ?: 'index.php?m=nuwmhealth&d=list');
+
+			$page = new MainWebsitePage($page_id);
+			if (!$page->Exists())
+				Redirect::Now($return_to ?: 'index.php?m=nuwmhealth&d=list');
+
+			$result = MainWebsitePageChecker::CheckAndUpdate($page);
+
+			$params = [
+				'm' => 'nuwmhealth',
+				'd' => 'list',
+				'ready' => $ready_filter,
+				'has_admin' => $admin_filter,
+				'ready_sort' => $ready_sort,
+				'group_by' => $group_by,
+				'report_sort' => $report_sort,
+			];
+			$url = $return_to ?: 'index.php?'.http_build_query($params);
+
+			$params = [
+				'checkstatus' => $result['status'],
+			];
+			if (!empty($result['error']))
+				$params['checkerror'] = $result['error'];
+
+			$url = sm_url($url, $params);
+
+			Redirect::Now($url);
 		}
 	elseif (sm_action('list'))
 		{
@@ -302,11 +346,6 @@
 				'report_link' => $report_link,
 			]);
 
-
-//			$buttons = new Buttons();
-//			$buttons->AddButton('report', 'Admin Report', $report_link);
-//			$ui->AddButtons($buttons);
-
 			if ($group_by === 'admin')
 				{
 					$groups = [];
@@ -341,7 +380,8 @@
 					$grid->AddCol('title', 'Title', '35%');
 					$grid->AddCol('url', 'URL', '35%');
 					$grid->AddCol('admin', 'Admin', '20%');
-					$grid->AddCol('ready', 'Ready', '10%');
+					$grid->AddCol('ready', 'Ready', '5%');
+					$grid->AddCol('actions', '', '5%');
 
 					foreach ($list->EachItem() as $item)
 						{
@@ -363,6 +403,14 @@
 							$status_class = $is_ready ? 'status-ready' : 'status-not-ready';
 							$status_label = $is_ready ? 'Ready' : 'Missing';
 							$grid->Label('ready', '<span class="nuwmhealth-status-pill '.$status_class.'">'.$status_label.'</span>');
+
+							$check_url = 'index.php?'.http_build_query([
+								'm' => 'nuwmhealth',
+								'd' => 'check',
+								'id' => $item->ID(),
+								'returnto' => sm_this_url(),
+							]);
+							$grid->Label('actions', '<a class="btn btn-default btn-sm" href="'.$check_url.'">Check</a>');
 
 							$grid->NewRow();
 						}

@@ -3,6 +3,7 @@
 	use NUWM\MainWebsite\MainWebsitePagesList;
 	use SM\Common\Redirect;
 	use SM\SM;
+	use SM\UI\Buttons;
 	use SM\UI\Grid;
 	use SM\UI\UI;
 
@@ -27,6 +28,10 @@
 	$group_by = SM::GET('group_by')->AsString();
 	if (!in_array($group_by, ['admin'], true))
 		$group_by = 'none';
+
+	$report_sort = SM::GET('report_sort')->AsString();
+	if (!in_array($report_sort, ['asc', 'desc'], true))
+		$report_sort = 'desc';
 
 	if (!function_exists('nuwmhealth_build_list'))
 		{
@@ -54,7 +59,121 @@
 				}
 		}
 
-	if (sm_action('export'))
+	if (!function_exists('nuwmhealth_prepare_admin_report'))
+		{
+			function nuwmhealth_prepare_admin_report(MainWebsitePagesList $list, string $sort_direction = 'desc'): array
+				{
+					$sort_direction = strtolower($sort_direction) === 'asc' ? 'asc' : 'desc';
+					$summary = [];
+					$overall_total = 0;
+					$overall_ready = 0;
+
+					foreach ($list->EachItem() as $item)
+						{
+							$overall_total++;
+							if ($item->Ready())
+								$overall_ready++;
+
+							$admin_value = trim((string)$item->Admin());
+							$key = $admin_value === '' ? '__unassigned__' : strtolower($admin_value);
+
+							if (!isset($summary[$key]))
+								{
+									$summary[$key] = [
+										'admin_label' => $admin_value === '' ? 'No admin assigned' : $admin_value,
+										'admin_email' => $admin_value,
+										'total' => 0,
+										'ready' => 0,
+										'missing' => 0,
+									];
+								}
+
+							$summary[$key]['total']++;
+							if ($item->Ready())
+								$summary[$key]['ready']++;
+							else
+								$summary[$key]['missing']++;
+						}
+
+					foreach ($summary as &$entry)
+						{
+							$entry['ready_percent'] = $entry['total'] > 0 ? round(($entry['ready'] / $entry['total']) * 100, 1) : 0;
+						}
+					unset($entry);
+
+					uasort($summary, function ($a, $b) use ($sort_direction)
+						{
+							$cmp = $sort_direction === 'desc'
+								? ($b['ready_percent'] <=> $a['ready_percent'])
+								: ($a['ready_percent'] <=> $b['ready_percent']);
+							if ($cmp !== 0)
+								return $cmp;
+
+							$cmp = $sort_direction === 'desc'
+								? ($b['total'] <=> $a['total'])
+								: ($a['total'] <=> $b['total']);
+							if ($cmp !== 0)
+								return $cmp;
+
+							return strcasecmp($a['admin_label'], $b['admin_label']);
+						});
+
+					$entries = [];
+					foreach ($summary as $entry)
+						{
+							$entries[] = $entry;
+						}
+
+					$overall_missing = $overall_total - $overall_ready;
+
+					return [
+						'entries' => $entries,
+						'overall' => [
+							'total' => $overall_total,
+							'ready' => $overall_ready,
+							'missing' => $overall_missing,
+							'ready_percent' => $overall_total > 0 ? round(($overall_ready / $overall_total) * 100, 1) : 0,
+						],
+					];
+				}
+		}
+
+	if (sm_action('report_export'))
+		{
+			$report_list = nuwmhealth_build_list($ready_filter, $admin_filter, $ready_sort, 'admin');
+			$report_list->Load();
+			$admin_report = nuwmhealth_prepare_admin_report($report_list, $report_sort);
+
+			header('Content-Type: text/csv; charset=utf-8');
+			header('Content-Disposition: attachment; filename="nuwmhealth_admin_report_'.date('Ymd_His').'.csv"');
+
+			$output = fopen('php://output', 'w');
+			fputcsv($output, ['Admin', 'Total Pages', 'Ready Pages', 'Missing Pages', 'Ready %']);
+
+			foreach ($admin_report['entries'] as $row)
+				{
+					fputcsv($output, [
+						$row['admin_label'],
+						$row['total'],
+						$row['ready'],
+						$row['missing'],
+						$row['ready_percent'],
+					]);
+				}
+
+			fputcsv($output, []);
+			fputcsv($output, [
+				'Overall',
+				$admin_report['overall']['total'],
+				$admin_report['overall']['ready'],
+				$admin_report['overall']['missing'],
+				$admin_report['overall']['ready_percent'],
+			]);
+
+			fclose($output);
+			exit;
+		}
+	elseif (sm_action('export'))
 		{
 			$list = nuwmhealth_build_list($ready_filter, $admin_filter, $ready_sort, $group_by);
 			$list->Load();
@@ -80,7 +199,47 @@
 			exit;
 		}
 
-	if (sm_action('list'))
+	if (sm_action('report'))
+		{
+			add_path_home();
+			add_path('NUWM Health', 'index.php?m=nuwmhealth');
+			add_path_current();
+
+			sm_title('Admin Report');
+			sm_add_body_class('buttons_above_table');
+
+			$report_list = nuwmhealth_build_list($ready_filter, $admin_filter, $ready_sort, 'admin');
+			$report_list->ShowAllItemsIfNoFilters();
+			$report_list->Load();
+
+			$admin_report = nuwmhealth_prepare_admin_report($report_list, $report_sort);
+
+			$ui = new UI();
+			$export_url = 'index.php?'.http_build_query([
+				'm' => 'nuwmhealth',
+				'd' => 'report_export',
+				'ready' => $ready_filter,
+				'has_admin' => $admin_filter,
+				'ready_sort' => $ready_sort,
+				'group_by' => $group_by,
+				'report_sort' => $report_sort,
+			]);
+			$ui->AddTPL('nuwmhealth_report_controls.tpl', '', [
+				'ready_filter' => $ready_filter,
+				'admin_filter' => $admin_filter,
+				'ready_sort' => $ready_sort,
+				'group_by' => $group_by,
+				'report_sort' => $report_sort,
+				'export_url' => $export_url,
+			]);
+			$ui->AddTPL('nuwmhealth_adminreport.tpl', '', [
+				'report' => $admin_report['entries'],
+				'overall' => $admin_report['overall'],
+			]);
+			$ui->Output(true);
+			return;
+		}
+	elseif (sm_action('list'))
 		{
 			add_path_home();
 			add_path_current();
@@ -111,6 +270,9 @@
 			$not_ready_pages = $not_ready_list->TotalCount();
 			$ready_percent = $total_pages > 0 ? round(($ready_pages / $total_pages) * 100, 1) : 0;
 
+			$report_list = nuwmhealth_build_list($ready_filter, $admin_filter, $ready_sort, 'admin');
+			$report_list->Load();
+
 			$ui = new UI();
 			$ui->AddTPL('nuwmhealth_stats.tpl', '', [
 				'total_pages' => $total_pages,
@@ -118,12 +280,32 @@
 				'not_ready_pages' => $not_ready_pages,
 				'ready_percent' => $ready_percent,
 			]);
+
+			$report_link = 'index.php?'.http_build_query([
+					'm' => 'nuwmhealth',
+					'd' => 'report',
+					'ready' => $ready_filter,
+					'has_admin' => $admin_filter,
+					'ready_sort' => $ready_sort,
+					'group_by' => $group_by,
+					'report_sort' => $report_sort,
+				]);
+
 			$ui->AddTPL('nuwmhealth_filters.tpl', '', [
 				'ready_filter' => $ready_filter,
 				'admin_filter' => $admin_filter,
 				'ready_sort' => $ready_sort,
 				'group_by' => $group_by,
+				'report_sort' => $report_sort,
+				'action' => 'list',
+				'export_action' => 'export',
+				'report_link' => $report_link,
 			]);
+
+
+//			$buttons = new Buttons();
+//			$buttons->AddButton('report', 'Admin Report', $report_link);
+//			$ui->AddButtons($buttons);
 
 			if ($group_by === 'admin')
 				{

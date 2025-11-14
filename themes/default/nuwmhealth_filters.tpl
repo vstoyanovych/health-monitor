@@ -1,6 +1,6 @@
 <form class="nuwmhealth-filters" method="get" action="index.php">
     <input type="hidden" name="m" value="nuwmhealth" />
-    <input type="hidden" name="d" value="list" />
+    <input type="hidden" name="d" value="{$data.action|default:'list'}" />
 
     <label>
         <span>Status</span>
@@ -39,8 +39,10 @@
 
     <div class="filter-actions">
         <button type="submit" class="btn btn-primary btn-sm">Apply</button>
-        <a class="btn btn-default btn-sm" href="index.php?m=nuwmhealth&d=list">Reset</a>
-        <a class="btn btn-success btn-sm" href="index.php?m=nuwmhealth&d=export&ready={$data.ready_filter}&has_admin={$data.admin_filter}&ready_sort={$data.ready_sort}&group_by={$data.group_by}">Export CSV</a>
+        <a class="btn btn-default btn-sm" href="index.php?m=nuwmhealth&d={$data.action|default:'list'}">Reset</a>
+        <a class="btn btn-success btn-sm" href="index.php?m=nuwmhealth&d={$data.export_action|default:'export'}&ready={$data.ready_filter}&has_admin={$data.admin_filter}&ready_sort={$data.ready_sort}&group_by={$data.group_by}&report_sort={$data.report_sort|default:'desc'}">Export CSV</a>
+
+        <a class="btn btn-warning btn-sm" href="{$data.report_link}">Admin Report</a>
     </div>
 </form>
 

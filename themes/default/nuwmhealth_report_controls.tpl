@@ -18,6 +18,7 @@
     <div class="report-actions">
         <button type="submit" class="btn btn-primary btn-sm">Apply</button>
         <a class="btn btn-success btn-sm" href="{$data.export_url|default:''}">Export CSV</a>
+        <a class="btn btn-default btn-sm" href="index.php?m=nuwmhealth&d=report_export_pdf&ready={$data.ready_filter}&has_admin={$data.admin_filter}&ready_sort={$data.ready_sort}&group_by={$data.group_by}&report_sort={$data.report_sort}&admin_email={$data.admin_email|escape}">Export PDF</a>
     </div>
 </form>
 

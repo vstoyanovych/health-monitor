@@ -146,6 +146,176 @@
 				}
 		}
 
+	if (!function_exists('nuwmhealth_render_pdf'))
+		{
+			function nuwmhealth_render_pdf(string $html, string $filename, string $orientation = 'portrait'): void
+				{
+					if (!class_exists('\Dompdf\Dompdf'))
+						{
+							$dompdf_autoload = sm_file_path('ext/dompdf/autoload.inc.php');
+							if (file_exists($dompdf_autoload))
+								require_once $dompdf_autoload;
+						}
+
+					$options = new \Dompdf\Options();
+					$options->set('isRemoteEnabled', true);
+					$options->set('chroot', sm_cms_rootdir());
+
+					$dompdf = new \Dompdf\Dompdf($options);
+					$dompdf->setPaper('A4', $orientation);
+					$dompdf->loadHtml($html, 'UTF-8');
+					$dompdf->render();
+					$dompdf->stream($filename, ['Attachment' => true]);
+					exit;
+				}
+		}
+
+	if (!function_exists('nuwmhealth_build_list_pdf_html'))
+		{
+			function nuwmhealth_build_list_pdf_html(MainWebsitePagesList $list, string $group_by, string $ready_filter, string $admin_filter): string
+				{
+					$title = 'NUWM Health Pages';
+					$subtitle_parts = [];
+					$subtitle_parts[] = 'Ready filter: '.$ready_filter;
+					$subtitle_parts[] = 'Admin filter: '.$admin_filter;
+					$subtitle = implode(' • ', $subtitle_parts);
+
+					$html = '<style>
+						body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 12px; }
+						h1 { font-size: 20px; margin-bottom: 4px; }
+						h2 { font-size: 16px; margin: 20px 0 6px; }
+						p.subtitle { color: #555; margin-top: 0; }
+						table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+						th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; }
+						th { background: #f1f5f9; }
+						.status-ready { color: #15803d; font-weight: bold; }
+						.status-missing { color: #b91c1c; font-weight: bold; }
+					</style>';
+					$html .= '<h1>'.$title.'</h1>';
+					$html .= '<p class="subtitle">'.$subtitle.'</p>';
+
+					if ($group_by === 'admin')
+						{
+							$groups = [];
+							foreach ($list->EachItem() as $item)
+								{
+									$admin_value = trim((string)$item->Admin());
+									$key = $admin_value === '' ? '__unassigned__' : $admin_value;
+
+									if (!isset($groups[$key]))
+										{
+											$groups[$key] = [
+												'admin_label' => $admin_value === '' ? 'No admin assigned' : $admin_value,
+												'items' => [],
+											];
+										}
+
+									$groups[$key]['items'][] = [
+										'title' => $item->Title(),
+										'url' => $item->URL(),
+										'ready' => $item->Ready() ? 'Ready' : 'Missing',
+									];
+								}
+
+							foreach ($groups as $group)
+								{
+									$html .= '<h2>'.htmlspecialchars($group['admin_label']).'</h2>';
+									$html .= '<table><tbody>';
+									foreach ($group['items'] as $page)
+										{
+											$status_class = $page['ready'] === 'Ready' ? 'status-ready' : 'status-missing';
+											$html .= '<tr>';
+											$html .= '<td style="width:50%;">'.htmlspecialchars($page['title']).'</td>';
+											$html .= '<td style="width:35%;">'.htmlspecialchars($page['url']).'</td>';
+											$html .= '<td style="width:15%;" class="'.$status_class.'">'.htmlspecialchars($page['ready']).'</td>';
+											$html .= '</tr>';
+										}
+									if (empty($group['items']))
+										$html .= '<tr><td colspan="3">No pages</td></tr>';
+									$html .= '</tbody></table>';
+								}
+						}
+					else
+						{
+							$html .= '<table><thead><tr>
+								<th style="width:5%;">#</th>
+								<th style="width:35%;">Title</th>
+								<th style="width:30%;">URL</th>
+								<th style="width:20%;">Admin</th>
+								<th style="width:10%;">Ready</th>
+							</tr></thead><tbody>';
+
+							$index = 1;
+							foreach ($list->EachItem() as $item)
+								{
+									$status = $item->Ready() ? 'Ready' : 'Missing';
+									$status_class = $item->Ready() ? 'status-ready' : 'status-missing';
+									$html .= '<tr>';
+									$html .= '<td>'.$index++.'</td>';
+									$html .= '<td>'.htmlspecialchars($item->Title()).'</td>';
+									$html .= '<td>'.htmlspecialchars($item->URL()).'</td>';
+									$html .= '<td>'.htmlspecialchars($item->Admin()).'</td>';
+									$html .= '<td class="'.$status_class.'">'.$status.'</td>';
+									$html .= '</tr>';
+								}
+
+							if ($index === 1)
+								$html .= '<tr><td colspan="5">No pages found.</td></tr>';
+
+							$html .= '</tbody></table>';
+						}
+
+					return $html;
+				}
+		}
+
+	if (!function_exists('nuwmhealth_build_admin_report_pdf_html'))
+		{
+			function nuwmhealth_build_admin_report_pdf_html(array $admin_report): string
+				{
+					$html = '<style>
+						body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 12px; }
+						h1 { font-size: 20px; margin-bottom: 10px; }
+						table { width: 100%; border-collapse: collapse; }
+						th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; }
+						th { background: #f1f5f9; }
+						tfoot td { font-weight: bold; background: #f8fafc; }
+					</style>';
+					$html .= '<h1>NUWM Health · Admin Report</h1>';
+					$html .= '<table><thead><tr>
+						<th>Admin</th>
+						<th>Total</th>
+						<th>Ready</th>
+						<th>Missing</th>
+						<th>Ready %</th>
+					</tr></thead><tbody>';
+
+					foreach ($admin_report['entries'] as $row)
+						{
+							$html .= '<tr>';
+							$html .= '<td>'.htmlspecialchars($row['admin_label']).'</td>';
+							$html .= '<td>'.$row['total'].'</td>';
+							$html .= '<td>'.$row['ready'].'</td>';
+							$html .= '<td>'.$row['missing'].'</td>';
+							$html .= '<td>'.$row['ready_percent'].'</td>';
+							$html .= '</tr>';
+						}
+
+					if (empty($admin_report['entries']))
+						$html .= '<tr><td colspan="5">No data available.</td></tr>';
+
+					$html .= '</tbody><tfoot><tr>';
+					$html .= '<td>Overall</td>';
+					$html .= '<td>'.$admin_report['overall']['total'].'</td>';
+					$html .= '<td>'.$admin_report['overall']['ready'].'</td>';
+					$html .= '<td>'.$admin_report['overall']['missing'].'</td>';
+					$html .= '<td>'.$admin_report['overall']['ready_percent'].'</td>';
+					$html .= '</tr></tfoot></table>';
+
+					return $html;
+				}
+		}
+
 	if (sm_action('report_export'))
 		{
 			$report_list = nuwmhealth_build_list($ready_filter, $admin_filter, $ready_sort, 'admin', $admin_email_filter);
@@ -245,6 +415,21 @@
 
 			fclose($output);
 			exit;
+		}
+	elseif (sm_action('export_pdf'))
+		{
+			$list = nuwmhealth_build_list($ready_filter, $admin_filter, $ready_sort, $group_by, $admin_email_filter);
+			$list->Load();
+			$html = nuwmhealth_build_list_pdf_html($list, $group_by, $ready_filter, $admin_filter);
+			nuwmhealth_render_pdf($html, 'nuwmhealth_pages_'.date('Ymd_His').'.pdf');
+		}
+	elseif (sm_action('report_export_pdf'))
+		{
+			$report_list = nuwmhealth_build_list($ready_filter, $admin_filter, $ready_sort, 'admin', $admin_email_filter);
+			$report_list->Load();
+			$admin_report = nuwmhealth_prepare_admin_report($report_list, $report_sort);
+			$html = nuwmhealth_build_admin_report_pdf_html($admin_report);
+			nuwmhealth_render_pdf($html, 'nuwmhealth_admin_report_'.date('Ymd_His').'.pdf', 'portrait');
 		}
 
 	if (sm_action('report'))
@@ -454,6 +639,7 @@
 				'report_sort' => $report_sort,
 				'action' => 'list',
 				'export_action' => 'export',
+				'pdf_action' => 'export_pdf',
 				'report_link' => $report_link,
 				'admin_email' => $admin_email_filter,
 			]);

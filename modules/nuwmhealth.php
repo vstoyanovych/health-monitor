@@ -34,9 +34,13 @@
 	if (!in_array($report_sort, ['asc', 'desc'], true))
 		$report_sort = 'desc';
 
+	$admin_email_filter = trim(SM::GET('admin_email')->AsString());
+	if ($admin_email_filter === '')
+		$admin_email_filter = null;
+
 	if (!function_exists('nuwmhealth_build_list'))
 		{
-			function nuwmhealth_build_list(string $ready_filter, string $admin_filter, string $ready_sort, string $group_by): MainWebsitePagesList
+			function nuwmhealth_build_list(string $ready_filter, string $admin_filter, string $ready_sort, string $group_by, ?string $admin_email_filter): MainWebsitePagesList
 				{
 					$list = new MainWebsitePagesList();
 					$list->ShowAllItemsIfNoFilters();
@@ -55,6 +59,9 @@
 						$list->OrderByAdmin(true);
 					elseif ($ready_sort === 'asc' || $ready_sort === 'desc')
 						$list->OrderByReady($ready_sort === 'asc');
+
+					if ($admin_email_filter !== null)
+						$list->FilterByAdminEmail($admin_email_filter);
 
 					return $list;
 				}
@@ -141,7 +148,7 @@
 
 	if (sm_action('report_export'))
 		{
-			$report_list = nuwmhealth_build_list($ready_filter, $admin_filter, $ready_sort, 'admin');
+			$report_list = nuwmhealth_build_list($ready_filter, $admin_filter, $ready_sort, 'admin', $admin_email_filter);
 			$report_list->Load();
 			$admin_report = nuwmhealth_prepare_admin_report($report_list, $report_sort);
 
@@ -149,7 +156,7 @@
 			header('Content-Disposition: attachment; filename="nuwmhealth_admin_report_'.date('Ymd_His').'.csv"');
 
 			$output = fopen('php://output', 'w');
-			fputcsv($output, ['Admin', 'Total Pages', 'Ready Pages', 'Missing Pages', 'Ready %']);
+			fputcsv($output, ['Admin', 'Total', 'Ready', 'Missing', 'Ready %']);
 
 			foreach ($admin_report['entries'] as $row)
 				{
@@ -176,24 +183,64 @@
 		}
 	elseif (sm_action('export'))
 		{
-			$list = nuwmhealth_build_list($ready_filter, $admin_filter, $ready_sort, $group_by);
+			$list = nuwmhealth_build_list($ready_filter, $admin_filter, $ready_sort, $group_by, $admin_email_filter);
 			$list->Load();
 
 			header('Content-Type: text/csv; charset=utf-8');
 			header('Content-Disposition: attachment; filename="nuwmhealth_pages_'.date('Ymd_His').'.csv"');
 
 			$output = fopen('php://output', 'w');
-			fputcsv($output, ['ID', 'Title', 'URL', 'Ready', 'Admin']);
-
-			foreach ($list->EachItem() as $item)
+			if ($group_by === 'admin')
 				{
-					fputcsv($output, [
-						$item->ID(),
-						$item->Title(),
-						$item->URL(),
-						$item->Ready() ? 'Ready' : 'Missing',
-						$item->Admin(),
-					]);
+					$groups = [];
+					foreach ($list->EachItem() as $item)
+						{
+							$admin_value = trim((string)$item->Admin());
+							$key = $admin_value === '' ? '__unassigned__' : $admin_value;
+
+							if (!isset($groups[$key]))
+								{
+									$groups[$key] = [
+										'admin_label' => $admin_value === '' ? 'No admin assigned' : $admin_value,
+										'items' => [],
+									];
+								}
+
+							$groups[$key]['items'][] = [
+								'title' => $item->Title(),
+								'url' => $item->URL(),
+								'ready' => $item->Ready() ? 'Ready' : 'Missing',
+							];
+						}
+
+					foreach ($groups as $group)
+						{
+							fputcsv($output, [$group['admin_label'], '', '']);
+							foreach ($group['items'] as $page)
+								{
+									fputcsv($output, [
+										'',
+										$page['title'],
+										$page['url'],
+										$page['ready'],
+									]);
+								}
+						}
+				}
+			else
+				{
+					fputcsv($output, ['ID', 'Title', 'URL', 'Ready', 'Admin']);
+
+					foreach ($list->EachItem() as $item)
+						{
+							fputcsv($output, [
+								$item->ID(),
+								$item->Title(),
+								$item->URL(),
+								$item->Ready() ? 'Ready' : 'Missing',
+								$item->Admin(),
+							]);
+						}
 				}
 
 			fclose($output);
@@ -209,15 +256,44 @@
 			sm_title('Admin Report');
 			sm_add_body_class('buttons_above_table');
 
-			$report_list = nuwmhealth_build_list($ready_filter, $admin_filter, $ready_sort, 'admin');
+			$report_list = nuwmhealth_build_list($ready_filter, $admin_filter, $ready_sort, 'admin', $admin_email_filter);
 			$report_list->ShowAllItemsIfNoFilters();
 			$report_list->Load();
 
 			$admin_report = nuwmhealth_prepare_admin_report($report_list, $report_sort);
+			$list_base_params = [
+				'm' => 'nuwmhealth',
+				'd' => 'list',
+				'has_admin' => $admin_filter,
+				'ready_sort' => $ready_sort,
+				'group_by' => $group_by,
+				'report_sort' => $report_sort,
+			];
+			foreach ($admin_report['entries'] as &$entry)
+				{
+					$admin_email = $entry['admin_email'];
+					$base_params = $list_base_params;
+
+					if ($admin_email !== '')
+						$base_params['admin_email'] = $admin_email;
+					else
+						$base_params['has_admin'] = 'unassigned';
+
+					$base_params['ready'] = 'all';
+					$entry['url_total'] = 'index.php?'.http_build_query($base_params);
+
+					$base_params['ready'] = 'ready';
+					$entry['url_ready'] = 'index.php?'.http_build_query($base_params);
+
+					$base_params['ready'] = 'missing';
+					$entry['url_missing'] = 'index.php?'.http_build_query($base_params);
+				}
+			unset($entry);
 
 			$ui = new UI();
 			$last_status = trim(SM::GET('checkstatus')->AsString());
 			$last_error = trim(SM::GET('checkerror')->AsString());
+			$deleted_title = trim(SM::GET('deletedtitle')->AsString());
 			if ($last_status !== '')
 				{
 					if ($last_error !== '')
@@ -225,6 +301,8 @@
 					else
 						$ui->NotificationSuccess('Last check: '.$last_status);
 				}
+			if ($deleted_title !== '')
+				$ui->NotificationSuccess('Deleted page "'.htmlspecialchars($deleted_title).'"');
 			$export_url = 'index.php?'.http_build_query([
 				'm' => 'nuwmhealth',
 				'd' => 'report_export',
@@ -233,6 +311,7 @@
 				'ready_sort' => $ready_sort,
 				'group_by' => $group_by,
 				'report_sort' => $report_sort,
+				'admin_email' => $admin_email_filter,
 			]);
 			$ui->AddTPL('nuwmhealth_report_controls.tpl', '', [
 				'ready_filter' => $ready_filter,
@@ -241,6 +320,7 @@
 				'group_by' => $group_by,
 				'report_sort' => $report_sort,
 				'export_url' => $export_url,
+				'admin_email' => $admin_email_filter,
 			]);
 			$ui->AddTPL('nuwmhealth_adminreport.tpl', '', [
 				'report' => $admin_report['entries'],
@@ -270,6 +350,7 @@
 				'ready_sort' => $ready_sort,
 				'group_by' => $group_by,
 				'report_sort' => $report_sort,
+				'admin_email' => $admin_email_filter,
 			];
 			$url = $return_to ?: 'index.php?'.http_build_query($params);
 
@@ -280,6 +361,35 @@
 				$params['checkerror'] = $result['error'];
 
 			$url = sm_url($url, $params);
+
+			Redirect::Now($url);
+		}
+	elseif (sm_action('delete'))
+		{
+			$page_id = SM::GET('id')->AsInt();
+			$return_to = SM::GET('returnto')->AsString();
+			if ($page_id <= 0)
+				Redirect::Now($return_to ?: 'index.php?m=nuwmhealth&d=list');
+
+			$page = new MainWebsitePage($page_id);
+			if (!$page->Exists())
+				Redirect::Now($return_to ?: 'index.php?m=nuwmhealth&d=list');
+
+			$title = $page->Title();
+			$page->Remove();
+
+			$params = [
+				'm' => 'nuwmhealth',
+				'd' => 'list',
+				'ready' => $ready_filter,
+				'has_admin' => $admin_filter,
+				'ready_sort' => $ready_sort,
+				'group_by' => $group_by,
+				'report_sort' => $report_sort,
+				'admin_email' => $admin_email_filter,
+			];
+			$url = $return_to ?: 'index.php?'.http_build_query($params);
+			$url = sm_url($url, ['deletedtitle' => $title]);
 
 			Redirect::Now($url);
 		}
@@ -294,7 +404,7 @@
 			$offset = abs(SM::GET('from')->AsInt());
 			$limit = 50;
 
-			$list = nuwmhealth_build_list($ready_filter, $admin_filter, $ready_sort, $group_by);
+			$list = nuwmhealth_build_list($ready_filter, $admin_filter, $ready_sort, $group_by, $admin_email_filter);
 			$list->Offset($offset);
 			$list->Limit($limit);
 			$list->Load();
@@ -314,7 +424,7 @@
 			$not_ready_pages = $not_ready_list->TotalCount();
 			$ready_percent = $total_pages > 0 ? round(($ready_pages / $total_pages) * 100, 1) : 0;
 
-			$report_list = nuwmhealth_build_list($ready_filter, $admin_filter, $ready_sort, 'admin');
+			$report_list = nuwmhealth_build_list($ready_filter, $admin_filter, $ready_sort, 'admin', $admin_email_filter);
 			$report_list->Load();
 
 			$ui = new UI();
@@ -333,6 +443,7 @@
 					'ready_sort' => $ready_sort,
 					'group_by' => $group_by,
 					'report_sort' => $report_sort,
+					'admin_email' => $admin_email_filter,
 				]);
 
 			$ui->AddTPL('nuwmhealth_filters.tpl', '', [
@@ -344,6 +455,7 @@
 				'action' => 'list',
 				'export_action' => 'export',
 				'report_link' => $report_link,
+				'admin_email' => $admin_email_filter,
 			]);
 
 			if ($group_by === 'admin')
@@ -359,6 +471,7 @@
 									$groups[$key] = [
 										'admin_label' => $admin_value === '' ? 'No admin assigned' : $admin_value,
 										'admin_email' => $admin_value,
+										'admin_url' => 'mailto:'.$admin_value,
 										'items' => [],
 									];
 								}
@@ -367,6 +480,7 @@
 								'title' => $item->Title(),
 								'url' => $item->URL(),
 								'ready' => $item->Ready(),
+								'id' => $item->ID(),
 							];
 						}
 
@@ -380,8 +494,8 @@
 					$grid->AddCol('title', 'Title', '35%');
 					$grid->AddCol('url', 'URL', '35%');
 					$grid->AddCol('admin', 'Admin', '20%');
-					$grid->AddCol('ready', 'Ready', '5%');
-					$grid->AddCol('actions', '', '5%');
+					$grid->AddCol('ready', 'Ready', '8%');
+					$grid->AddCol('actions', '', '12%');
 
 					foreach ($list->EachItem() as $item)
 						{
@@ -404,13 +518,22 @@
 							$status_label = $is_ready ? 'Ready' : 'Missing';
 							$grid->Label('ready', '<span class="nuwmhealth-status-pill '.$status_class.'">'.$status_label.'</span>');
 
+							$current_url = sm_this_url();
 							$check_url = 'index.php?'.http_build_query([
 								'm' => 'nuwmhealth',
 								'd' => 'check',
 								'id' => $item->ID(),
-								'returnto' => sm_this_url(),
+								'returnto' => $current_url,
 							]);
-							$grid->Label('actions', '<a class="btn btn-default btn-sm" href="'.$check_url.'">Check</a>');
+							$delete_url = 'index.php?'.http_build_query([
+								'm' => 'nuwmhealth',
+								'd' => 'delete',
+								'id' => $item->ID(),
+								'returnto' => $current_url,
+							]);
+							$actions_html = '<a class="btn btn-default btn-sm" href="'.$check_url.'">Check</a> ';
+							$actions_html .= '<a class="btn btn-danger btn-sm" href="'.$delete_url.'" onclick="return confirm(\'Delete this page?\');">Delete</a>';
+							$grid->Label('actions', $actions_html);
 
 							$grid->NewRow();
 						}

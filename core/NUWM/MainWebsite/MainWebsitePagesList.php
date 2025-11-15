@@ -63,6 +63,15 @@
 					$this->SetFilterFieldIntValue('need_to_check', $need_to_check ? 1 : 0);
 					return $this;
 				}
+
+			public function FilterByAdminEmail(?string $admin_email): self
+				{
+					if ($admin_email === null)
+						return $this;
+
+					$this->SetFilterFieldStringValue('admin', $admin_email);
+					return $this;
+				}
 		}
 
 

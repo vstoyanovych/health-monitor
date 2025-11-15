@@ -21,6 +21,11 @@
     </label>
 
     <label>
+        <span>Admin email</span>
+        <input type="text" name="admin_email" class="form-control input-sm" value="{$data.admin_email|escape}">
+    </label>
+
+    <label>
         <span>Ready order</span>
         <select name="ready_sort" class="form-control input-sm">
             <option value="id"{if $data.ready_sort eq 'id'} selected{/if}>Default (by ID)</option>
@@ -40,7 +45,7 @@
     <div class="filter-actions">
         <button type="submit" class="btn btn-primary btn-sm">Apply</button>
         <a class="btn btn-default btn-sm" href="index.php?m=nuwmhealth&d={$data.action|default:'list'}">Reset</a>
-        <a class="btn btn-success btn-sm" href="index.php?m=nuwmhealth&d={$data.export_action|default:'export'}&ready={$data.ready_filter}&has_admin={$data.admin_filter}&ready_sort={$data.ready_sort}&group_by={$data.group_by}&report_sort={$data.report_sort|default:'desc'}">Export CSV</a>
+        <a class="btn btn-success btn-sm" href="index.php?m=nuwmhealth&d={$data.export_action|default:'export'}&ready={$data.ready_filter}&has_admin={$data.admin_filter}&ready_sort={$data.ready_sort}&group_by={$data.group_by}&report_sort={$data.report_sort|default:'desc'}&admin_email={$data.admin_email|escape}">Export CSV</a>
 
         <a class="btn btn-warning btn-sm" href="{$data.report_link}">Admin Report</a>
     </div>

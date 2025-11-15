@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2025-11-14 18:34:10
+<?php /* Smarty version 2.6.26, created on 2025-11-15 18:49:02
          compiled from nuwmhealth_groups.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('modifier', 'count', 'nuwmhealth_groups.tpl', 2, false),array('modifier', 'escape', 'nuwmhealth_groups.tpl', 15, false),)), $this); ?>
@@ -36,6 +36,7 @@ smarty_core_load_plugins(array('plugins' => array(array('modifier', 'count', 'nu
                             <th>Title</th>
                             <th>URL</th>
                             <th class="text-center">Ready</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -60,6 +61,15 @@ smarty_core_load_plugins(array('plugins' => array(array('modifier', 'count', 'nu
                                     <?php else: ?>
                                         <span class="nuwmhealth-status-pill status-not-ready">Missing</span>
                                     <?php endif; ?>
+                                </td>
+                                <td class="text-center">
+                                    <?php $this->assign('current_url', $_SERVER['REQUEST_URI']); ?>
+                                    <?php $this->assign('check_url', "index.php?m=nuwmhealth&d=check&id=".($this->_tpl_vars['item']['id'])."&returnto=`".($this->_tpl_vars['current_url'])."|escape`"); ?>
+                                    <?php $this->assign('delete_url', "index.php?m=nuwmhealth&d=delete&id=".($this->_tpl_vars['item']['id'])."&returnto=`".($this->_tpl_vars['current_url'])."|escape`"); ?>
+                                    <a class="btn btn-default btn-xs" href="<?php echo ((is_array($_tmp=$this->_tpl_vars['check_url'])) ? $this->_run_mod_handler('escape', true, $_tmp) : smarty_modifier_escape($_tmp)); ?>
+">Check</a>
+                                    <a class="btn btn-danger btn-xs" href="<?php echo ((is_array($_tmp=$this->_tpl_vars['delete_url'])) ? $this->_run_mod_handler('escape', true, $_tmp) : smarty_modifier_escape($_tmp)); ?>
+" onclick="return confirm('Delete this page?');">Delete</a>
                                 </td>
                             </tr>
                         <?php endforeach; endif; unset($_from); ?>

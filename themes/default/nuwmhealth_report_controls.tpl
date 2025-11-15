@@ -5,6 +5,7 @@
     <input type="hidden" name="has_admin" value="{$data.admin_filter}" />
     <input type="hidden" name="ready_sort" value="{$data.ready_sort}" />
     <input type="hidden" name="group_by" value="{$data.group_by}" />
+    <input type="hidden" name="admin_email" value="{$data.admin_email|escape}" />
 
     <label>
         <span>Sort by readiness</span>

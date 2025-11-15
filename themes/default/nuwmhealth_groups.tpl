@@ -26,6 +26,7 @@
                             <th>Title</th>
                             <th>URL</th>
                             <th class="text-center">Ready</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -45,6 +46,13 @@
                                     {else}
                                         <span class="nuwmhealth-status-pill status-not-ready">Missing</span>
                                     {/if}
+                                </td>
+                                <td class="text-center">
+                                    {assign var=current_url value=$smarty.server.REQUEST_URI}
+                                    {assign var=check_url value="index.php?m=nuwmhealth&d=check&id=`$item.id`&returnto=`$current_url|escape`"}
+                                    {assign var=delete_url value="index.php?m=nuwmhealth&d=delete&id=`$item.id`&returnto=`$current_url|escape`"}
+                                    <a class="btn btn-default btn-xs" href="{$check_url|escape}">Check</a>
+                                    <a class="btn btn-danger btn-xs" href="{$delete_url|escape}" onclick="return confirm('Delete this page?');">Delete</a>
                                 </td>
                             </tr>
                         {/foreach}

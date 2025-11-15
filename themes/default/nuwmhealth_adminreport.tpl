@@ -36,9 +36,15 @@
                                 {$row.admin_label|escape}
                             {/if}
                         </td>
-                        <td class="text-center">{$row.total}</td>
-                        <td class="text-center text-success">{$row.ready}</td>
-                        <td class="text-center text-danger">{$row.missing}</td>
+                        <td class="text-center">
+                            <a href="{$row.url_total|escape}">{$row.total}</a>
+                        </td>
+                        <td class="text-center text-success">
+                            <a href="{$row.url_ready|escape}">{$row.ready}</a>
+                        </td>
+                        <td class="text-center text-danger">
+                            <a href="{$row.url_missing|escape}">{$row.missing}</a>
+                        </td>
                         <td class="text-center">
                             {if $row.total > 0}
                                 {$row.ready_percent|number_format:1}%

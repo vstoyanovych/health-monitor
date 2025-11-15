@@ -1,7 +1,7 @@
-<?php /* Smarty version 2.6.26, created on 2025-11-14 19:18:41
+<?php /* Smarty version 2.6.26, created on 2025-11-15 18:48:24
          compiled from nuwmhealth_filters.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('modifier', 'default', 'nuwmhealth_filters.tpl', 3, false),)), $this); ?>
+smarty_core_load_plugins(array('plugins' => array(array('modifier', 'default', 'nuwmhealth_filters.tpl', 3, false),array('modifier', 'escape', 'nuwmhealth_filters.tpl', 25, false),)), $this); ?>
 <form class="nuwmhealth-filters" method="get" action="index.php">
     <input type="hidden" name="m" value="nuwmhealth" />
     <input type="hidden" name="d" value="<?php echo ((is_array($_tmp=@$this->_tpl_vars['data']['action'])) ? $this->_run_mod_handler('default', true, $_tmp, 'list') : smarty_modifier_default($_tmp, 'list')); ?>
@@ -23,6 +23,12 @@ smarty_core_load_plugins(array('plugins' => array(array('modifier', 'default', '
             <option value="assigned"<?php if ($this->_tpl_vars['data']['admin_filter'] == 'assigned'): ?> selected<?php endif; ?>>Has admin</option>
             <option value="unassigned"<?php if ($this->_tpl_vars['data']['admin_filter'] == 'unassigned'): ?> selected<?php endif; ?>>No admin</option>
         </select>
+    </label>
+
+    <label>
+        <span>Admin email</span>
+        <input type="text" name="admin_email" class="form-control input-sm" value="<?php echo ((is_array($_tmp=$this->_tpl_vars['data']['admin_email'])) ? $this->_run_mod_handler('escape', true, $_tmp) : smarty_modifier_escape($_tmp)); ?>
+">
     </label>
 
     <label>
@@ -52,6 +58,7 @@ smarty_core_load_plugins(array('plugins' => array(array('modifier', 'default', '
 &ready_sort=<?php echo $this->_tpl_vars['data']['ready_sort']; ?>
 &group_by=<?php echo $this->_tpl_vars['data']['group_by']; ?>
 &report_sort=<?php echo ((is_array($_tmp=@$this->_tpl_vars['data']['report_sort'])) ? $this->_run_mod_handler('default', true, $_tmp, 'desc') : smarty_modifier_default($_tmp, 'desc')); ?>
+&admin_email=<?php echo ((is_array($_tmp=$this->_tpl_vars['data']['admin_email'])) ? $this->_run_mod_handler('escape', true, $_tmp) : smarty_modifier_escape($_tmp)); ?>
 ">Export CSV</a>
 
         <a class="btn btn-warning btn-sm" href="<?php echo $this->_tpl_vars['data']['report_link']; ?>

@@ -1,7 +1,7 @@
-<?php /* Smarty version 2.6.26, created on 2025-11-14 19:16:05
+<?php /* Smarty version 2.6.26, created on 2025-11-15 18:48:27
          compiled from nuwmhealth_report_controls.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('modifier', 'default', 'nuwmhealth_report_controls.tpl', 19, false),)), $this); ?>
+smarty_core_load_plugins(array('plugins' => array(array('modifier', 'escape', 'nuwmhealth_report_controls.tpl', 8, false),array('modifier', 'default', 'nuwmhealth_report_controls.tpl', 20, false),)), $this); ?>
 <form class="nuwmhealth-report-controls" method="get" action="index.php">
     <input type="hidden" name="m" value="nuwmhealth" />
     <input type="hidden" name="d" value="report" />
@@ -12,6 +12,8 @@ smarty_core_load_plugins(array('plugins' => array(array('modifier', 'default', '
     <input type="hidden" name="ready_sort" value="<?php echo $this->_tpl_vars['data']['ready_sort']; ?>
 " />
     <input type="hidden" name="group_by" value="<?php echo $this->_tpl_vars['data']['group_by']; ?>
+" />
+    <input type="hidden" name="admin_email" value="<?php echo ((is_array($_tmp=$this->_tpl_vars['data']['admin_email'])) ? $this->_run_mod_handler('escape', true, $_tmp) : smarty_modifier_escape($_tmp)); ?>
 " />
 
     <label>

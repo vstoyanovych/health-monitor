@@ -1,0 +1,9 @@
+.idea
+httpdocs/files/
+files/
+landing/files/
+*dbsettings*
+*testmodule.*
+*.DS_Store
+.vscode/settings.json
+.vscode/launch.json

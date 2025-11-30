@@ -1,0 +1,114 @@
+
+.switch-account-d
+{
+    display: none;
+}
+
+.sa-font-icon
+{
+    margin-left: 10px;
+}
+
+.switch-account-d
+{
+    padding-left: 20px !important;
+}
+
+.switch-account-d .btn
+{
+    margin-top: 0 !important;
+    margin-left: 10px !important;
+    padding: 5px !important;
+}
+
+.switch-account-d a:focus , .switch-account-a:focus, .switch-current-account-a:focus
+{
+    background: transparent !important;
+}
+
+.switch-account-d .btn-danger:focus, .switch-account-d .btn-danger:hover
+{
+    color: #000 !important;
+    background-color: #dc3545 !important;
+}
+
+.add-account-error-msg
+{
+    display: none;
+}
+
+.view-login-block
+{
+    display: none;
+}
+
+.view-choose-account-block .header-title
+{
+    margin-left: 0;
+    text-align: center;
+}
+
+.user-choose-account p {
+    color: #949ba2;
+}
+.user-choose-account h5 {
+    margin-bottom: 2px;
+}
+.user-choose-account {
+    border-bottom: 1px solid #dfe0e1;
+}
+.user-choose-account-another {
+    border-bottom: 1px solid #dfe0e1;
+    padding: 10px 0px;
+    cursor: pointer;
+}
+
+
+[data-letters-account]:before {
+    content:attr(data-letters-account);
+    display:inline-block;
+    font-size:1em;
+    width:2.5em;
+    height:2.5em;
+    line-height:2.5em;
+    text-align:center;
+    border-radius:50%;
+    background:#0052CC;
+    vertical-align:middle;
+    margin-right:1em;
+    color:#fff;
+}
+
+.user-choose-account-another .another-user-icon
+{
+    font-size: 26px;
+    text-align: center;
+    margin-top: 3px;
+}
+
+.user-choose-account .letter-badge-circle
+{
+    margin-top: 11px;
+}
+.bg-light-gray {
+    background: #fafafa;
+}
+.dropdown-menu .bg-light-gray a .fa{
+    color: #000!important;
+}
+.dropdown-menu .bg-light-gray a:hover{
+    background: #fafafa!important;
+    color: #000!important;
+}
+.switch-account-d .btn.btn-danger:hover,
+.switch-account-d .btn.btn-danger{
+    color: rgb(255, 76, 81)!important;
+}
+.account-switcher .account-login-email {
+    font-size: 11px;
+}
+.account-switcher {
+    display: flex !important;
+    flex-direction: column;
+    flex-grow: 1;
+}

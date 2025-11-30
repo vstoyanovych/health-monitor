@@ -1,0 +1,13 @@
+<?php
+
+	if (!defined("SIMAN_DEFINED"))
+		exit('Hacking attempt!');
+
+	$result = execsql("SELECT key_r, value_r FROM ".sm_table_prefix()."replacers");
+	while ($row = database_fetch_row($result))
+		{
+			$sm['s']['replacers'][$row[0]] = $row[1];
+			sm_add_content_modifier($sm['s']['replacers'][$row[0]]);
+		}
+
+?>

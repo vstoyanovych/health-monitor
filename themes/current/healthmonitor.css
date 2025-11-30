@@ -1,0 +1,155 @@
+.resource-actions a{
+    display: flex;
+    align-items: center;
+}
+.resource-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.resource-action-icon {
+    width: 20px;
+    height: 20px;
+}
+.resource-action-icon-delete {
+    width: 20px;
+    height: 20px;
+}
+.resource-action-icon-delete path {
+    stroke: #dc3545;
+}
+
+.buttons_above_table .adminbuttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+.dashboard-add-resource-btn:hover{
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+/* Resource Details Styles */
+.resource-details-info {
+    margin-bottom: 24px;
+}
+.resource-details-title {
+    margin: 0 0 20px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f172a;
+}
+.resource-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+.resource-details-field {
+    line-height: 1.6;
+}
+.resource-status-pill-small {
+    font-size: 14px;
+    padding: 6px 12px;
+    display: inline-block;
+    margin-top: 4px;
+}
+.resource-availability-section {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
+}
+.resource-availability-title {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.resource-details-filter {
+    margin-bottom: 24px;
+}
+.resource-details-section-title {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f172a;
+}
+.resource-period-filter-form {
+    display: flex;
+    gap: 12px;
+    align-items: end;
+    flex-wrap: wrap;
+}
+.resource-filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.resource-filter-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+.resource-filter-input {
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 14px;
+}
+.resource-filter-button {
+    padding: 8px 16px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    height: fit-content;
+}
+.resource-filter-reset {
+    padding: 8px 16px;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-weight: 500;
+    text-decoration: none;
+    height: fit-content;
+}
+
+.resource-details-availability {
+    margin-bottom: 24px;
+}
+.resource-availability-bar-large {
+    display: flex;
+    gap: 1px;
+    height: 40px;
+    min-width: 100%;
+}
+.resource-availability-dates {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.resource-details-chart {
+    margin-bottom: 24px;
+}
+.resource-chart-container {
+    position: relative;
+    height: 300px;
+}
+
+.resource-details-table {
+    margin-bottom: 24px;
+}
+.resource-checks-table {
+    width: 100%;
+}
+.resource-error-text {
+    color: #dc3545;
+}
+.resource-no-checks {
+    color: #64748b;
+}

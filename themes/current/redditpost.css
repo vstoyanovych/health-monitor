@@ -1,0 +1,109 @@
+.suggestion {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.suggestion:hover {
+    background-color: #f5f5f5;
+}
+
+.suggestion:last-child {
+    border-bottom: none;
+}
+
+.item-preview {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.item-preview h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.item-preview h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.item-preview p {
+    margin-bottom: 10px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.item-preview small {
+    color: #888;
+}
+
+#subreddit-suggestions {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 0 0 4px 4px;
+}
+
+.form-group {
+    position: relative;
+}
+
+.reddit-post-form {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.reddit-post-form .form-group {
+    margin-bottom: 20px;
+}
+
+.reddit-post-form label {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.reddit-post-form input[type="text"],
+.reddit-post-form select,
+.reddit-post-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.reddit-post-form textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.reddit-post-form .btn {
+    background: #FF4500;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.reddit-post-form .btn:hover {
+    background: #E03D00;
+}
+
+.reddit-post-form .btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+} 

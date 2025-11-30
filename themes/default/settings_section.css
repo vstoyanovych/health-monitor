@@ -1,0 +1,49 @@
+.settings_section .block-content-outer{
+    display: flex;
+    gap: 10px;
+}
+.settings_section .container-fluid > #block0body > .block{
+    background: transparent;
+}
+.global-settings-sidebar {
+    padding: 20px;
+    align-items: baseline;
+    background: #fff !important;
+    border-radius: 4px !important;
+    max-width: 300px;
+}
+.settings_section .global-settings-sidebar ul.nav-tabs li{
+    width: 100%;
+    display: table;
+}
+.settings_section .global-settings-sidebar ul li a:hover{
+    border-bottom: 0;
+}
+.size-6{
+    width: 20px;
+    height: 20px;
+}
+.settings_section .global-settings-sidebar ul li.active a:hover{
+    padding: 10px 15px;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+}
+.settings_section .global-settings-sidebar ul li.active a {
+    background: #4682B4!important;
+    color: #fff;
+}
+.settings_section .global-settings-sidebar ul li a {
+    border-radius: 5px;
+    font-weight: 400;
+    line-height: 20px;
+    color: #475569;
+    font-size: 14px;
+    margin-right: 0;
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    border: 0px;
+    gap: 7px;
+}

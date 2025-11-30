@@ -3,7 +3,7 @@
 	<div class="resource-details-grid">
 		<div class="resource-details-field">
 			<strong>URL:</strong><br>
-			<a href="https://{$data.url|escape}" target="_blank" rel="noopener">https://{$data.url|escape}</a>
+			<a href="{$data.url|escape}" target="_blank" rel="noopener">{$data.url|escape}</a>
 		</div>
 		<div class="resource-details-field">
 			<strong>Notification Email:</strong><br>

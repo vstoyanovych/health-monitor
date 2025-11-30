@@ -269,14 +269,7 @@
 			$summary = ResourceStatus::Summary($resource, 24); // Current status uses last 24h
 			$status = $summary['status'];
 
-			// Get recent logs for the selected period
-			$logs = new ResourceLogsList();
-			$logs->SetFilterResourceID($resource->ID());
-			$logs->SetFilterForPeriod(date('Y-m-d H:i:s', $start_timestamp), date('Y-m-d H:i:s', $end_timestamp));
-			$logs->OrderByTimeChecked(false);
-			$logs->Limit(100);
-			$logs->ShowAllItemsIfNoFilters();
-			$logs->Load();
+
 
 			// Prepare response time data for chart
 			// Group by hours if period is 1 day or less, otherwise group by days
@@ -438,6 +431,18 @@
 				'time_label' => $time_label,
 			]);
 
+			$offset = $offset = SM::GET('from')->AsAbsInt();
+			$limit = 30;
+			
+			// Get recent logs for the selected period
+			$logs = new ResourceLogsList();
+			$logs->SetFilterResourceID($resource->ID());
+			$logs->SetFilterForPeriod(date('Y-m-d H:i:s', $start_timestamp), date('Y-m-d H:i:s', $end_timestamp));
+			$logs->OrderByTimeChecked(false);
+			$logs->Limit($limit);
+			$logs->Offset($offset);
+			$logs->Load();
+
 			// Recent checks table template
 			$logs_data = [];
 			foreach ($logs->EachItem() as $log)
@@ -464,6 +469,7 @@
 			$ui->AddTPL('resource_details_table.tpl', '', [
 				'logs' => $logs_data,
 			]);
+			$ui->AddPagebarParams($logs->TotalCount(), $limit, $offset);
 			$ui->Output(true);
 			return;
 		}
